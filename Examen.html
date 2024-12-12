@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Finder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        header {
+            background-color: #ffcb05;
+            color: #2a75bb;
+            padding: 10px 0;
+            margin-bottom: 20px;
+        }
+
+        #output img {
+            width: 150px;
+            margin-top: 10px;
+        }
+
+        #output {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+            display: inline-block;
+        }
+
+        input, button {
+            padding: 10px;
+            margin: 5px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Pokémon Finder</h1>
+    </header>
+
+    <main>
+        <input type="text" id="pokemonName" placeholder="Escribe el nombre del Pokémon">
+        <button id="search">Buscar</button>
+        <div id="output"></div>
+    </main>
+
+    <script>
+        document.getElementById('search').addEventListener('click', () => {
+            const pokemonName = document.getElementById('pokemonName').value.trim().toLowerCase();
+
+            if (pokemonName === '') {
+                alert('Por favor, ingresa el nombre de un Pokémon.');
+                return;
+            }
+
+            fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Pokémon no encontrado.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('output').innerHTML = `
+                        <h2>${data.name.toUpperCase()}</h2>
+                        <img src="${data.sprites.front_default}" alt="Imagen de ${data.name}">
+                        <p><strong>Altura:</strong> ${data.height / 10} m</p>
+                        <p><strong>Peso:</strong> ${data.weight / 10} kg</p>
+                        <p><strong>Habilidades:</strong> ${data.abilities.map(a => a.ability.name).join(', ')}</p>
+                    `;
+                })
+                .catch(error => {
+                    document.getElementById('output').innerHTML = `<p style="color: red;">${error.message}</p>`;
+                });
+        });
+    </script>
+</body>
+</html>
